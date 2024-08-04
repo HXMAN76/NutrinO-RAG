@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Chatbot UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f9;
+        }
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .chat-container:hover {
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                0 0 20px rgba(255, 255, 255, 0.15) inset,
+                0 0 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .chat-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-container:hover .chat-header {
+            background-color: #34495e;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 70%;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-message {
+            background-color: #2c3e50;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input {
+            display: flex;
+            padding: 20px;
+            background-color: #ffffff;
+            border-top: 1px solid #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-container:hover .chat-input {
+            background-color: #f9f9f9;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        #user-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+        }
+        #send-button {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 12px 20px;
+            transition: background-color 0.3s ease;
+        }
+        #send-button:hover {
+            background-color: #34495e;
+        }
+        .loading {
+            text-align: center;
+            font-size: 16px;
+            color: #6c757d;
+            padding: 10px;
+        }
+        .developer-credit {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .developer-credit a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .developer-credit a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .chat-header {
+                font-size: 20px;
+                padding: 15px;
+            }
+            .chat-messages {
+                padding: 15px;
+            }
+            .chat-input {
+                padding: 15px;
+            }
+            #user-input, #send-button {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+        .developer-credit {
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .developer-credit a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .developer-credit a:hover {
+            text-decoration: underline;
+        }
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+            background-color: #2c3e50;
+            border-radius: 50%;
+            display: inline-block;
+            animation: dots 1.5s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes dots {
+            0%, 100% { transform: scale(0.2); opacity: 0.2; }
+            50% { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Nutrition info by Team Nooglers</div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <div class="developer-credit">
+        Developed by <a href="https://www.linkedin.com/in/your-linkedin-profile" target="_blank">Nooglers</a>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+            messageDiv.textContent = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('loading');
+            loadingDiv.textContent = 'Loading...';
+            loadingDiv.setAttribute('id', 'loading');
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeLoading() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) {
+                chatMessages.removeChild(loadingDiv);
+            }
+        }
+        function addLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('loading-dots');
+            loadingDiv.setAttribute('id', 'loading');
+            loadingDiv.innerHTML = '<span></span><span></span><span></span>';
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeLoading() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) {
+                chatMessages.removeChild(loadingDiv);
+            }
+        }
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                userInput.value = '';
+
+                addLoading();
+
+                fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: message }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    removeLoading();
+                    if (data.error) {
+                        addMessage(`Error: ${data.error}`);
+                    } else if (data.answer) {
+                        addMessage(data.answer);
+                    } else {
+                        addMessage('Received an unexpected response from the server.');
+                    }
+                })
+                .catch(error => {
+                    removeLoading();
+                    console.error('Error:', error);
+                    addMessage('Sorry, there was an error processing your request.');
+                });
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

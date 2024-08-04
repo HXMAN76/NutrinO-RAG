@@ -8,3 +8,10 @@ To process the Files from json (made by gemini_process.py) to text file (meaning
 To infer from the table and convert into json format
 ## app.py
 Used Flask as back-end. 
+<br>
+<br>
+<br>
+<br>
+
+> [!IMPORTANT]  
+> You can get Gemini API key, head over to Google AI Studio. For openAI api key or Queries reated to that Contact [Sai Nivedh](https://www.linkedin.com/in/sainivedhai/)

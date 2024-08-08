@@ -18,7 +18,7 @@ api = Api(app)
 
 # Load the persisted Chroma database
 embeddings = OpenAIEmbeddings()
-vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
+vectorstore = Chroma(persist_directory="./hybrid_db", embedding_function=embeddings)
 
 # Initialize language model
 llm = OpenAI(model_name="gpt-4o-mini")
@@ -41,7 +41,7 @@ class ChatbotAPI(Resource):
         # Create a prompt template for meal component identification
         self.meal_prompt = PromptTemplate(
             input_variables=["meal"],
-            template="List the main food items typically included in {meal}. Provide only the names of the food items, separated by commas. Nothing more than that."
+            template="List the main food items typically included in {meal}. Provide only the names of the food items components, separated by commas. Nothing more than that.For example if it has Chilli coconut chutney then it must seperate the components as Chilli and Coconut and search for the database for the Information"
         )
         
         # Create an LLMChain for meal component identification
@@ -69,14 +69,14 @@ class ChatbotAPI(Resource):
         # Use OpenAI to generate a comprehensive response
         response_prompt = PromptTemplate(
             input_variables=["question", "components", "nutritional_info"],
-            template="""Given the question: {question}
+            template="""Given the question: {question}z
 
 The meal consists of: {components}
 
 Nutritional information:
 {nutritional_info}
 
-Provide a comprehensive answer about the nutritional content of the meal. Include overall calorie estimates, macronutrient breakdown, and any significant micronutrients. If exact information is not available for any component, provide educated estimates based on similar foods."""
+Provide a comprehensive answer about the nutritional content of the meal. Include all details of macronutrient breakdown, and any significant micronutrients. If exact information is not available for any component, provide educated estimates based on similar foods from database."""
         )
         response_chain = LLMChain(llm=self.llm, prompt=response_prompt)
         

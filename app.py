@@ -41,7 +41,21 @@ class ChatbotAPI(Resource):
         # Create a prompt template for meal component identification
         self.meal_prompt = PromptTemplate(
             input_variables=["meal"],
-            template="List the main food items typically included in {meal}. Provide only the names of the food items components, separated by commas. Nothing more than that.For example if it has Chilli coconut chutney then it must seperate the components as Chilli and Coconut and search for the database for the Information"
+            template = """
+Given the meal name "{meal}", break it down into its individual food components. 
+
+Please ensure the following:
+1. **Decomposition of Complex Ingredients**: If an ingredient typically combines multiple components (e.g., "Chilli coconut chutney"), list each component separately (e.g., "Chilli", "Coconut").
+2. **Granular Identification**: Break down complex dishes into their base components. For example, for "Biriyani," list all ingredients such as "onion, tomato, rice, chicken, spices, oil, ghee."
+3. **Common Ingredients**: Identify commonly used spices, oils, and base ingredients typical to the cuisine.
+4. **Component Focus**: If the meal includes specific types of vegetables, meats, or grains, ensure they are listed as individual components (e.g., "chicken, basmati rice, cumin, coriander").
+5. **Avoid Ambiguity**: Only list specific, identifiable components. Do not generalize ingredients (e.g., use "coriander seeds" instead of just "spices").
+6. **Order of Listing**: List the components in the order of their prominence or quantity in the meal.
+7. **Accuracy**: Ensure all listed components are specific and relevant to the meal.
+
+Return the components as a comma-separated list, and do not include any additional text or explanation.
+"""
+
         )
         
         # Create an LLMChain for meal component identification
@@ -69,14 +83,21 @@ class ChatbotAPI(Resource):
         # Use OpenAI to generate a comprehensive response
         response_prompt = PromptTemplate(
             input_variables=["question", "components", "nutritional_info"],
-            template="""Given the question: {question}z
+            template="""Format your response as follows:
 
-The meal consists of: {components}
+Nutritional Information for [Food Item]
+Serving Size: [Specify a standard serving size]
 
-Nutritional information:
-{nutritional_info}
+Caloric Content:
+- Calories: [Amount]
 
-Provide a comprehensive answer about the nutritional content of the meal. Include all details of macronutrient breakdown, and any significant micronutrients. If exact information is not available for any component, provide educated estimates based on similar foods from database."""
+Macronutrients:
+1. Carbohydrates: [Amount]
+2. Proteins: [Amount]
+3. Fats: [Amount]
+
+Micronutrients:
+[List any significant vitamins and minerals]"""
         )
         response_chain = LLMChain(llm=self.llm, prompt=response_prompt)
         
@@ -134,3 +155,5 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+

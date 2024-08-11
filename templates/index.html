@@ -30,7 +30,6 @@
             transition: all 0.3s ease, box-shadow 0.3s ease;
             margin-bottom: 20px;
         }
-
         .chat-container:hover {
             box-shadow: 
                 0 5px 15px rgba(0, 0, 0, 0.1),
@@ -39,7 +38,6 @@
                 0 0 40px rgba(0, 0, 0, 0.1);
             transform: translateY(-5px);
         }
-
         .chat-header {
             background-color: #2c3e50;
             color: white;
@@ -49,11 +47,9 @@
             font-weight: 600;
             transition: background-color 0.3s ease;
         }
-
         .chat-container:hover .chat-header {
             background-color: #34495e;
         }
-
         .chat-messages {
             flex-grow: 1;
             height: 400px;
@@ -91,8 +87,9 @@
             background-color: #ffffff;
             border-top: 1px solid #e9ecef;
             transition: background-color 0.3s ease;
+            align-items: center;
+            position: relative;
         }
-
         .chat-container:hover .chat-input {
             background-color: #f9f9f9;
         }
@@ -109,7 +106,7 @@
             border-color: #2c3e50;
             box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
         }
-        #send-button {
+        #send-button, #upload-button {
             background-color: #2c3e50;
             color: white;
             border: none;
@@ -120,8 +117,26 @@
             padding: 12px 20px;
             transition: background-color 0.3s ease;
         }
-        #send-button:hover {
+        #send-button:hover, #upload-button:hover {
             background-color: #34495e;
+        }
+        #upload-button {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        #upload-button input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .uploaded-image {
+            display: block;
+            max-width: 100%;
+            max-height: 100px;
+            margin: 10px 0;
         }
         .loading {
             text-align: center;
@@ -154,25 +169,10 @@
             .chat-input {
                 padding: 15px;
             }
-            #user-input, #send-button {
+            #user-input, #send-button, #upload-button {
                 font-size: 14px;
                 padding: 10px;
             }
-        }
-        .developer-credit {
-            text-align: center;
-            font-size: 14px;
-            color: #6c757d;
-            margin-top: 10px;
-            width: 100%;
-        }
-        .developer-credit a {
-            color: #2c3e50;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .developer-credit a:hover {
-            text-decoration: underline;
         }
         .loading-dots {
             display: flex;
@@ -180,7 +180,6 @@
             align-items: center;
             padding: 10px;
         }
-
         .loading-dots span {
             width: 8px;
             height: 8px;
@@ -190,20 +189,16 @@
             display: inline-block;
             animation: dots 1.5s infinite ease-in-out;
         }
-
         .loading-dots span:nth-child(2) {
             animation-delay: 0.5s;
         }
-
         .loading-dots span:nth-child(3) {
             animation-delay: 1s;
         }
-
         @keyframes dots {
             0%, 100% { transform: scale(0.2); opacity: 0.2; }
             50% { transform: scale(1); opacity: 1; }
         }
-
     </style>
 </head>
 <body>
@@ -212,7 +207,12 @@
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input">
             <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="upload-button">
+                <i class="fas fa-image"></i>
+                <input type="file" id="file-input" accept="image/*">
+            </button>
             <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            <img id="preview-image" class="uploaded-image" style="display: none;">
         </div>
     </div>
     <div class="developer-credit">
@@ -223,31 +223,21 @@
         const chatMessages = document.getElementById('chat-messages');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
+        const uploadButton = document.getElementById('upload-button');
+        const fileInput = document.getElementById('file-input');
+        const previewImage = document.getElementById('preview-image');
+
+        let uploadedImage = null;
 
         function addMessage(content, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
-            messageDiv.textContent = content;
+            messageDiv.innerHTML = content;
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function addLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.classList.add('loading');
-            loadingDiv.textContent = 'Loading...';
-            loadingDiv.setAttribute('id', 'loading');
-            chatMessages.appendChild(loadingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function removeLoading() {
-            const loadingDiv = document.getElementById('loading');
-            if (loadingDiv) {
-                chatMessages.removeChild(loadingDiv);
-            }
-        }
         function addLoading() {
             const loadingDiv = document.createElement('div');
             loadingDiv.classList.add('loading-dots');
@@ -264,10 +254,29 @@
             }
         }
 
+        function handleFileUpload() {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage = e.target.result;
+                    previewImage.src = uploadedImage;
+                    previewImage.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
         function sendMessage() {
             const message = userInput.value.trim();
-            if (message) {
-                addMessage(message, true);
+            if (message || uploadedImage) {
+                let content = message;
+                if (uploadedImage) {
+                    content += `<img src="${uploadedImage}" class="uploaded-image">`;
+                    previewImage.style.display = 'none'; // Hide preview
+                    uploadedImage = null; // Clear the image after sending
+                }
+                addMessage(content, true);
                 userInput.value = '';
 
                 addLoading();
@@ -283,24 +292,27 @@
                 .then(data => {
                     removeLoading();
                     if (data.error) {
-                        addMessage(`Error: ${data.error}`);
+                        addMessage(`Error: ${data.error}`, false);
                     } else if (data.answer) {
-                        addMessage(data.answer);
+                        addMessage(data.answer, false);
                     } else {
-                        addMessage('Received an unexpected response from the server.');
+                        addMessage('Received an unexpected response from the server.', false);
                     }
                 })
                 .catch(error => {
                     removeLoading();
                     console.error('Error:', error);
-                    addMessage('Sorry, there was an error processing your request.');
+                    addMessage('Sorry, there was an error processing your request.', false);
                 });
             }
         }
 
+        fileInput.addEventListener('change', handleFileUpload);
         sendButton.addEventListener('click', sendMessage);
+
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 sendMessage();
             }
         });

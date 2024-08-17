@@ -7,11 +7,15 @@ from langchain.chains import RetrievalQA, LLMChain
 from langchain.prompts import PromptTemplate
 import os
 import logging
+import google.generativeai as gemini
+import base64
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
+gemini.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = Flask(__name__)
 api = Api(app)
@@ -32,85 +36,67 @@ qa_chain = RetrievalQA.from_chain_type(
 
 class ChatbotAPI(Resource):
     def __init__(self):
-        self.greetings = ['hi', 'hello', 'hey', 'greetings', 'howdy', 'wassup']
-        self.farewells = ['bye', 'goodbye', 'see you', 'farewell', 'thanks', 'thank you']
-        
-        # Initialize OpenAI model
-        self.llm =  OpenAI(model_name="gpt-4o-mini")
-        
-        # Create a prompt template for meal component identification
-        self.meal_prompt = PromptTemplate(
-            input_variables=["meal"],
-            template = """
-Given the meal name "{meal}", break it down into its individual food components. 
+        def __init__(self):
+            self.greetings = ['hi', 'hello', 'hey', 'greetings', 'howdy', 'wassup']
+            self.farewells = ['bye', 'goodbye', 'see you', 'farewell', 'thanks', 'thank you']
+            
+            # Initialize OpenAI model
+            self.llm =  OpenAI(model_name="gpt-4o-mini")
+            
+            # Create a prompt template for meal component identification
+            self.meal_prompt = PromptTemplate(
+                input_variables=["meal"],
+                template = """
+    Given the meal name "{meal}", break it down into its individual food components. 
 
-Please ensure the following:
-1. **Decomposition of Complex Ingredients**: If an ingredient typically combines multiple components (e.g., "Chilli coconut chutney"), list each component separately (e.g., "Chilli", "Coconut").
-2. **Granular Identification**: Break down complex dishes into their base components. For example, for "Biriyani," list all ingredients such as "onion, tomato, rice, chicken, spices, oil, ghee."
-3. **Common Ingredients**: Identify commonly used spices, oils, and base ingredients typical to the cuisine.
-4. **Component Focus**: If the meal includes specific types of vegetables, meats, or grains, ensure they are listed as individual components (e.g., "chicken, basmati rice, cumin, coriander").
-5. **Avoid Ambiguity**: Only list specific, identifiable components. Do not generalize ingredients (e.g., use "coriander seeds" instead of just "spices").
-6. **Order of Listing**: List the components in the order of their prominence or quantity in the meal.
-7. **Accuracy**: Ensure all listed components are specific and relevant to the meal.
+    Please ensure the following:
+    1. **Decomposition of Complex Ingredients**: If an ingredient typically combines multiple components (e.g., "Chilli coconut chutney"), list each component separately (e.g., "Chilli", "Coconut").
+    2. **Granular Identification**: Break down complex dishes into their base components. For example, for "Biriyani," list all ingredients such as "onion, tomato, rice, chicken, spices, oil, ghee."
+    3. **Common Ingredients**: Identify commonly used spices, oils, and base ingredients typical to the cuisine.
+    4. **Component Focus**: If the meal includes specific types of vegetables, meats, or grains, ensure they are listed as individual components (e.g., "chicken, basmati rice, cumin, coriander").
+    5. **Avoid Ambiguity**: Only list specific, identifiable components. Do not generalize ingredients (e.g., use "coriander seeds" instead of just "spices").
+    6. **Order of Listing**: List the components in the order of their prominence or quantity in the meal.
+    7. **Accuracy**: Ensure all listed components are specific and relevant to the meal.
 
-Return the components as a comma-separated list, and do not include any additional text or explanation.
-"""
+    Return the components as a comma-separated list, and do not include any additional text or explanation.
+    """
 
-        )
-        
-        # Create an LLMChain for meal component identification
-        self.meal_chain = LLMChain(llm=self.llm, prompt=self.meal_prompt)
+            )
+            
+            # Create an LLMChain for meal component identification
+            self.meal_chain = LLMChain(llm=self.llm, prompt=self.meal_prompt)
 
-    def is_greeting(self, text):
-        return any(text.lower().startswith(word) for word in self.greetings)
+    def get_gem_response(self, input_prompt, image_data):
+        model = gemini.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content([input_prompt, image_data])
+        return response.text
 
-    def is_farewell(self, text):
-        return any(word in text.lower().split() for word in self.farewells)
+    def process_image(self, image_data):
+        input_prompt = """
+        You are an expert nutritionist. Analyze the food item(s) in this image and provide:
 
-    def process_meal_query(self, question):
-        # Extract the meal name from the question
-        meal_name = question.split("eating")[-1].strip().split(".")[0].strip()
-        
-        # Use the meal_chain to identify food components
-        components = self.meal_chain.run(meal_name).split(', ')
-        
-        # Query the database for each component
-        nutritional_info = []
-        for component in components:
-            result = qa_chain({"query": f"Detailed nutrition facts for {component}"})
-            nutritional_info.append(f"{component}: {result['result']}")
-        
-        # Use OpenAI to generate a comprehensive response
-        response_prompt = PromptTemplate(
-            input_variables=["question", "components", "nutritional_info"],
-            template="""Format your response as follows:
+        1. A list of all food items visible
+        2. Estimated total calories
+        3. Nutritional breakdown including carbohydrates, proteins, fats, fibers, and sugars
+        4. Whether the meal is generally considered healthy or not
+        5. Any additional nutritional advice or insights
 
-Nutritional Information for [Food Item]
-Serving Size: [Specify a standard serving size]
-
-Caloric Content:
-- Calories: [Amount]
-
-Macronutrients:
-1. Carbohydrates: [Amount]
-2. Proteins: [Amount]
-3. Fats: [Amount]
-
-Micronutrients:
-[List any significant vitamins and minerals]"""
-        )
-        response_chain = LLMChain(llm=self.llm, prompt=response_prompt)
-        
-        final_response = response_chain.run({
-            "question": question,
-            "components": ", ".join(components),
-            "nutritional_info": "\n".join(nutritional_info)
-        })
-        
-        return final_response
+        Present the information in a clear, structured format.
+        """
+        return self.get_gem_response(input_prompt, image_data)
 
     def post(self):
         try:
+            if 'file' in request.files:
+                file = request.files['file']
+                if file and file.filename:
+                    image_data = {
+                        "mime_type": file.content_type,
+                        "data": base64.b64encode(file.read()).decode('utf-8')
+                    }
+                    response = self.process_image(image_data)
+                    return jsonify({"answer": response})
+
             data = request.get_json()
             question = data.get('question', '').strip()
             
@@ -147,6 +133,10 @@ Micronutrients:
             logging.error(f"Error processing request: {str(e)}")
             return jsonify({"error": "An error occurred while processing your request. Please try again or rephrase your question."})
 
+        except Exception as e:
+            logging.error(f"Error processing request: {str(e)}")
+            return jsonify({"error": "An error occurred while processing your request. Please try again."})
+
 api.add_resource(ChatbotAPI, '/api/chat')
 
 @app.route('/')
@@ -155,6 +145,3 @@ def home():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
-
-
-

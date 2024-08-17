@@ -87,8 +87,6 @@
             background-color: #ffffff;
             border-top: 1px solid #e9ecef;
             transition: background-color 0.3s ease;
-            align-items: center;
-            position: relative;
         }
         .chat-container:hover .chat-input {
             background-color: #f9f9f9;
@@ -106,7 +104,7 @@
             border-color: #2c3e50;
             box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
         }
-        #send-button, #upload-button {
+        #send-button {
             background-color: #2c3e50;
             color: white;
             border: none;
@@ -117,26 +115,8 @@
             padding: 12px 20px;
             transition: background-color 0.3s ease;
         }
-        #send-button:hover, #upload-button:hover {
+        #send-button:hover {
             background-color: #34495e;
-        }
-        #upload-button {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        #upload-button input[type="file"] {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .uploaded-image {
-            display: block;
-            max-width: 100%;
-            max-height: 100px;
-            margin: 10px 0;
         }
         .loading {
             text-align: center;
@@ -169,7 +149,7 @@
             .chat-input {
                 padding: 15px;
             }
-            #user-input, #send-button, #upload-button {
+            #user-input, #send-button {
                 font-size: 14px;
                 padding: 10px;
             }
@@ -199,6 +179,30 @@
             0%, 100% { transform: scale(0.2); opacity: 0.2; }
             50% { transform: scale(1); opacity: 1; }
         }
+        .file-upload {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        .file-upload label {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .file-upload label:hover {
+            background-color: #34495e;
+        }
+        #file-name {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -206,13 +210,13 @@
         <div class="chat-header">Nutrition info by Team Nooglers</div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input">
+            <div class="file-upload">
+                <input type="file" id="image-upload" accept="image/*">
+                <label for="image-upload"><i class="fas fa-camera"></i></label>
+                <span id="file-name"></span>
+            </div>
             <input type="text" id="user-input" placeholder="Type your message...">
-            <button id="upload-button">
-                <i class="fas fa-image"></i>
-                <input type="file" id="file-input" accept="image/*">
-            </button>
             <button id="send-button"><i class="fas fa-paper-plane"></i></button>
-            <img id="preview-image" class="uploaded-image" style="display: none;">
         </div>
     </div>
     <div class="developer-credit">
@@ -223,17 +227,14 @@
         const chatMessages = document.getElementById('chat-messages');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
-        const uploadButton = document.getElementById('upload-button');
-        const fileInput = document.getElementById('file-input');
-        const previewImage = document.getElementById('preview-image');
-
-        let uploadedImage = null;
+        const imageUpload = document.getElementById('image-upload');
+        const fileName = document.getElementById('file-name');
 
         function addMessage(content, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
-            messageDiv.innerHTML = content;
+            messageDiv.textContent = content;
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -254,66 +255,67 @@
             }
         }
 
-        function handleFileUpload() {
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImage = e.target.result;
-                    previewImage.src = uploadedImage;
-                    previewImage.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
         function sendMessage() {
             const message = userInput.value.trim();
-            if (message || uploadedImage) {
-                let content = message;
-                if (uploadedImage) {
-                    content += `<img src="${uploadedImage}" class="uploaded-image">`;
-                    previewImage.style.display = 'none'; // Hide preview
-                    uploadedImage = null; // Clear the image after sending
+            const file = imageUpload.files[0];
+
+            if (message || file) {
+                if (file) {
+                    addMessage(`Uploaded image: ${file.name}`, true);
                 }
-                addMessage(content, true);
+                if (message) {
+                    addMessage(message, true);
+                }
                 userInput.value = '';
+                fileName.textContent = '';
 
                 addLoading();
 
+                const formData = new FormData();
+                if (file) {
+                    formData.append('file', file);
+                }
+                if (message) {
+                    formData.append('question', message);
+                }
+
                 fetch('/api/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question: message }),
+                    body: formData,
                 })
                 .then(response => response.json())
                 .then(data => {
                     removeLoading();
                     if (data.error) {
-                        addMessage(`Error: ${data.error}`, false);
+                        addMessage(`Error: ${data.error}`);
                     } else if (data.answer) {
-                        addMessage(data.answer, false);
+                        addMessage(data.answer);
                     } else {
-                        addMessage('Received an unexpected response from the server.', false);
+                        addMessage('Received an unexpected response from the server.');
                     }
                 })
                 .catch(error => {
                     removeLoading();
                     console.error('Error:', error);
-                    addMessage('Sorry, there was an error processing your request.', false);
+                    addMessage('Sorry, there was an error processing your request.');
                 });
+
+                imageUpload.value = ''; // Clear the file input
             }
         }
 
-        fileInput.addEventListener('change', handleFileUpload);
         sendButton.addEventListener('click', sendMessage);
-
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                e.preventDefault();
                 sendMessage();
+            }
+        });
+
+        imageUpload.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = '';
             }
         });
     </script>

@@ -12,6 +12,8 @@ Used Flask as back-end.
 <br>
 <br>
 <br>
+> [!CAUTION]  
+> Still we need to address the part of Unwanted responses
 
 > [!IMPORTANT]  
 > You can get Gemini API key, head over to Google AI Studio. For openAI api key or Queries reated to that Contact [Sai Nivedh](https://www.linkedin.com/in/sainivedhai/)

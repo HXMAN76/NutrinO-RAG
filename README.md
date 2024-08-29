@@ -17,104 +17,18 @@ https://github.com/SaiNivedh26/Team-Nooglers/assets/142657686/46c4ab4f-ee72-4280
 
 
 ## Overview
-This project aims to detect deepfake videos using advanced deep learning techniques, specifically leveraging the ResNeXt-50 model architecture. Deepfake videos, which are highly realistic but fabricated using AI algorithms, pose a significant threat to the authenticity of visual media content. By developing a robust framework for classifying videos as real or fake, we contribute to the ongoing efforts to combat the proliferation of misinformation and preserve the integrity of digital media platforms.
-![mindmap](https://github.com/SaiNivedh26/Team-Nooglers/assets/88413854/0a65a4d2-c3a3-4af5-a4ca-29c2919523d2)
 
 
 ## 🧐 Features
 
-- Utilizes the Celeb-DF-v2 dataset, comprising a 6000+ diverse collection of real and synthesized videos featuring celebrity personas.
-- Implements the ResNeXt-50 model architecture for video classification.
-- Provides functionality for preprocessing videos, extracting frames, and applying data augmentation techniques.
-- Offers inference capabilities for detecting deepfake videos in real time.
-- Includes example scripts for training the model and evaluating its performance.
-# Usage of Intel Developer Cloud 🌐💻
-
-
-Leveraging the powerful resources provided by Intel Developer Cloud accelerated our development and deployment of the deepfake video detection model. We harnessed the computational capabilities of Intel's CPUs and XPUs to optimize critical components, such as video preprocessing, frame extraction, and model inference.
-
-By taking advantage of Intel's high-performance computing infrastructure and optimized software libraries (e.g., Intel's one deep neural network library), we significantly reduced the time required for data preprocessing, model training, and inference. This allowed for faster experimentation, iterative improvements, and ultimately, a more efficient deployment of our deepfake detection solution.
 
 # Flow Diagram 🔄📊
-
-![flow](https://github.com/SaiNivedh26/Team-Nooglers/assets/142657686/feec05e7-1a40-47c5-845c-ddf4da46967e)
 
 
 ## Necessary Libraries
 
-To run this project, you'll need the following libraries:
-
-- Python 3.x
-- oneDNN (Intel's Deep neural Network Library)
-- PyTorch
-- torchvision
-- timm
-- OpenCV
-- PIL
-
-## Installation procedure for OneDNN 📦⬇️
-Download oneDNN source code or clone the repository.
-
-```bash
-git clone https://github.com/oneapi-src/oneDNN.git
-```
-
-Build the Library
->Ensure that all software dependencies are in place and have at least the minimal supported version.
-
- > * CMAKE_INSTALL_PREFIX to control the library installation location
- > * CMAKE_BUILD_TYPE to select between build type (Release, Debug, RelWithDebInfo).
 
 
-
-Linux/macOs
-> Generate makefile:
-```bash
-  mkdir -p build && cd build && cmake ..
-```
-> Build the library:
-```bash
-  make -j
-```
-> Build the doumentation:
-```bash
- make doc
-```
-> Install the library,headers,and documentations:
-```bash
-  make install
-```
-
-Windows
-> Generate a Microsoft Visual Studio solution:
-```bash
-  mkdir build && cd build && cmake -G "Visual Studio 15 2017 Win64" ..
-```
-> For the solution to use the Intel C++ Compiler, select the corresponding toolchain using the cmake -T switch:
-```bash
- cmake -G "Visual Studio 15 2017 Win64" -T "Intel C++ Compiler 19.0" ..
-```
-> Build the library:
-```bash
- cmake --build .
-```
-> You can also use the msbuild command-line tool directly (here /p:Configuration selects the build configuration which can be different from the one specified in CMAKE_BUILD_TYPE, and /m enables a parallel build):
-```bash
-  msbuild "oneDNN.sln" /p:Configuration=Release /m
-```
-> Build the documentation
-```bash
-  cmake --build . --target DOC
-```
-> Install the library, headers, and documentation:
-```bash
-  cmake --build . --target INSTALL
-```
-Validate the Build
-> Run unit tests:
-```bash
-  ctest
-```
 
 ## Contributing 🤝
   Contributions are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve this project. 
@@ -146,18 +60,7 @@ Start the server
 ```
 # How We Built It 🛠️👷‍♂️
 
-- Developed a custom data pipeline for loading and preprocessing the Celeb-DF-v2 dataset. 📂
-- Implemented the ResNeXt-50 model architecture using PyTorch for video classification. 🔥
-- Utilized transfer learning techniques by fine-tuning the model on the Celeb-DF-v2 dataset. 🏋️‍♀️
-- Leveraged Intel Developer Cloud's powerful computing resources and optimized libraries (e.g., oneDNN) to accelerate model training and inference. ⚡
-# References For Datasets 📊📚
-
-- <h2>Celeb-DF-v2 dataset</h2> [Drive 🔗] (https://www.google.com/url?q=https://drive.google.com/open?id%3D1iLx76wsbi9itnkxSqz9BVBl4ZvnbIazj&sa=D&source=editors&ust=1711031793764133&usg=AOvVaw176zn3G8Ep0EDWpMV-rWnQ)
-
 # Model performance 🕝 ⚡
-<h2>This is the comparison of regular code and the same code utlized OneDNN for an 1080 p Video with the duration of 20 seconds. The Implementation of Intel® oneAPI Deep Neural Network Library accelerated the performance by 2.8 - 3 times</h2>
-
-![Time (seconds)](https://github.com/SaiNivedh26/Team-Nooglers/assets/142657686/f2a14d7a-f47a-42a8-8708-17015cb90060)
 
 
 ## Authors

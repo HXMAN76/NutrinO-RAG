@@ -5,14 +5,6 @@
 
 
 
-We have obtained accelerated version of the model after using [```Intel® oneAPI Deep Neural Network Library```](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onednn.html#gs.6pwnat)
-
-
-
-
-
-https://github.com/SaiNivedh26/Team-Nooglers/assets/142657686/46c4ab4f-ee72-4280-be10-8d335e72cb12
-
 
 
 

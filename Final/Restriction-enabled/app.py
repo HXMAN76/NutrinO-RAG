@@ -1,4 +1,5 @@
 
+
 from flask import Flask, request, jsonify, render_template
 from flask_restful import Api, Resource
 from langchain.vectorstores import Chroma
@@ -161,7 +162,7 @@ Micronutrients:
             # Check if the question is about a meal or specific food item
             if "eating" in question.lower() or any(food_word in question.lower() for food_word in ["meal", "dish", "cuisine"]):
                 meal_response = self.process_meal_query(question)
-                return jsonify({"answer": meal_response})
+                return jsonify({"answer": self.format_output(meal_response)})
 
             # If not a meal-specific query, use the general QA chain
             result = qa_chain({"query": question})
@@ -174,7 +175,7 @@ Micronutrients:
                 )
                 clarification_chain = LLMChain(llm=self.llm, prompt=clarification_prompt)
                 clarified_response = clarification_chain.run(question)
-                return jsonify({"answer": clarified_response})
+                return jsonify({"answer": self.format_output(clarified_response)})
 
             return jsonify({"answer": result['result']})
 

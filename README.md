@@ -9,7 +9,7 @@
 
 
 ## Overview
-NutrinO-RAG offers a personal food guidance chatbot that leverages the power of Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG). Our model is designed to provide users with reliable and personalized nutritional information. By integrating a comprehensive dataset of food items from domain knowledge document extracted using Gemini AI, NutrinO-RAG delivers clear and concise responses powered by GPT-4o mini, ensuring that users receive accurate and relevant information.
+NutrinO-RAG offers a personal food guidance chatbot that uses the power of Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG). Our model is designed to provide users with reliable and personalized nutritional information. By integrating a comprehensive dataset of food items from domain knowledge document extracted using Gemini AI, NutrinO-RAG delivers clear and concise responses powered by GPT-4o mini, ensuring that users receive accurate and relevant information.
 
 The chatbot's capabilities include providing nutritional values for various food items, generating personalized diet plans based on specific health conditions, regional preferences, and accessibility concerns, and offering region-based food suggestions. By combining the strengths of LLMs and RAG, NutrinO-RAG provides an intuitive and user-friendly experience that helps users make informed dietary choices, ultimately contributing to better health and well-being.
 

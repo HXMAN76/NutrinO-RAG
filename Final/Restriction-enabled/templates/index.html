@@ -6,6 +6,7 @@
     <title>NutrioRAG : Take your health to next level</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image" href="https://uxwing.com/wp-content/themes/uxwing/download/fitness-gym-yoga-spa/healthy-food-icon.png">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -16,11 +17,23 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f4f7f9;
+            overflow: hidden;
+        }
+        #bg{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background-image : url("https://i.postimg.cc/cHJLb0qH/food-bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
         }
         .chat-container {
-            width: 90%;
-            max-width: 800px;
+            min-width: 75vw;
+            min-height: 80vh;
+            max-width: 80vw;
             background-color: #ffffff;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -30,7 +43,7 @@
             transition: all 0.3s ease, box-shadow 0.3s ease;
             margin-bottom: 20px;
         }
-
+        
         .chat-container:hover {
             box-shadow: 
                 0 5px 15px rgba(0, 0, 0, 0.1),
@@ -39,7 +52,7 @@
                 0 0 40px rgba(0, 0, 0, 0.1);
             transform: translateY(-5px);
         }
-
+        
         .chat-header {
             background-color: #2c3e50;
             color: white;
@@ -49,11 +62,11 @@
             font-weight: 600;
             transition: background-color 0.3s ease;
         }
-
+        
         .chat-container:hover .chat-header {
             background-color: #34495e;
         }
-
+        
         .chat-messages {
             flex-grow: 1;
             height: 400px;
@@ -68,6 +81,25 @@
             max-width: 70%;
             animation: fadeIn 0.3s ease;
         }
+
+        #report-btn{
+            background-color: white;
+            border: 4px solid rgb(252,139,37);
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            padding: 5px;
+        }
+        #report-btn img{
+            width: 2.75rem;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -92,7 +124,7 @@
             border-top: 1px solid #e9ecef;
             transition: background-color 0.3s ease;
         }
-
+        
         .chat-container:hover .chat-input {
             background-color: #f9f9f9;
         }
@@ -131,9 +163,18 @@
         }
         .developer-credit {
             text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6c757d;
+            position: fixed;
+            bottom: -1px;
+        }
+        .developer-credit h3{
+            color: black;
+            font-weight: lighter;
+            background-color:rgb(252,139,37);
+            border: 1px solid #fff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            width: fit-content;
+            margin: 0 auto;
         }
         .developer-credit a {
             color: #2c3e50;
@@ -166,19 +207,21 @@
             margin-top: 10px;
             width: 100%;
         }
-        .developer-credit b {
+        .developer-credit a {
             color: #2c3e50;
             text-decoration: none;
             font-weight: 500;
         }
-        
+        .developer-credit a:hover {
+            text-decoration: underline;
+        }
         .loading-dots {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px;
         }
-
+        
         .loading-dots span {
             width: 8px;
             height: 8px;
@@ -188,54 +231,58 @@
             display: inline-block;
             animation: dots 1.5s infinite ease-in-out;
         }
-
+        
         .loading-dots span:nth-child(2) {
             animation-delay: 0.5s;
         }
-
+        
         .loading-dots span:nth-child(3) {
             animation-delay: 1s;
         }
-
+        
         @keyframes dots {
             0%, 100% { transform: scale(0.2); opacity: 0.2; }
             50% { transform: scale(1); opacity: 1; }
         }
-
+        
         .nutrition-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-
+        
         .nutrition-table th, .nutrition-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
-
+        
         .nutrition-table th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
-
+        
         .nutrition-table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-
-    </style>
+    </style>        
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">NutrinoRAG </div>
-        <div class="chat-messages" id="chat-messages"></div>
-        <div class="chat-input">
-            <input type="text" id="user-input" placeholder="Type your message...">
-            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+    <div id="bg">
+        <div class="chat-container">
+            <div class="chat-header">NutrinoRAG </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            </div>
         </div>
-    </div>
-    <div class="developer-credit">
-        Developed by <b>Nooglers</b>
+        <div class="developer-credit">
+            <h3>Developed by Nooglers</h3>
+        </div>
+        <a href="https://github.com/MAD-MAN-HEMAN/NutrinO-RAG/issues" target="_blank" id="report-btn" title="Report-A-Bug">
+            <img src="https://cdn3.iconfinder.com/data/icons/security-testing/128/bug-coding-testing-security_testing-quality_check-programming_2-1024.png">
+        </a>
     </div>
 
     <script>
@@ -350,4 +397,3 @@
     </script>
 </body>
 </html>
-

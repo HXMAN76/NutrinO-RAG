@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, render_template
 from flask_restful import Api, Resource
 from langchain.vectorstores import Chroma
@@ -68,14 +69,14 @@ Return the components as a comma-separated list, and do not include any addition
         self.topic_classification_prompt = PromptTemplate(
             input_variables=["question"],
             template="""
-Determine if the following question is related to food, nutrition, or diet plans:
+Determine if the following question is related to food, nutrition, or diet plans, even if it includes personal details like age, gender, medical conditions, or region:
 
 Question: {question}
 
-Respond with either 'YES' if it is related to food, nutrition, or diet plans, or 'NO' if it is not. 
+Respond with 'YES' if it is related to food, nutrition, or diet plans, and may include personal details. Respond with 'NO' if it is not related to food, nutrition, or diet plans. 
 Do not provide any explanation, just 'YES' or 'NO'.
 """
-        )
+)
         
         # Create an LLMChain for topic classification
         self.topic_classification_chain = LLMChain(llm=self.llm, prompt=self.topic_classification_prompt)
@@ -133,6 +134,12 @@ Micronutrients:
         
         return final_response
 
+    def format_output(self, output):
+        #to format the resulted ouput spliting the ouput with ### to get the needed contents
+        output = output.replace("**","")
+        res = output.split("###")[1:-1]
+        return "".join(res)
+    
     def post(self):
         try:
             data = request.get_json()

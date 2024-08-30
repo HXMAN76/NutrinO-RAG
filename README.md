@@ -24,20 +24,25 @@ The chatbot's capabilities include providing nutritional values for various food
 - **Customized Diet Plans**: Personalized guidance for managing specific health conditions.
 - **Convenience**: Easy access to region-specific food recommendations based on user preferences and availability.
 
-## Flow Diagram 🔄📊
+## Workflow Diagram
 ![NUTRINORAG](https://github.com/user-attachments/assets/27b775ca-882a-46bb-a44c-ba1d2b6316fa)
 
+## Userflow Diagram
+
 ## Tech Stack Used
+ - **Flask**
+ - **Lang-Chain**
+     - OpenAI
+     - Gemini AI
+ - **ChromaDB**
+ - **Docker** 
 
 ## How We Built It 🛠️👷‍♂️
-- NutrinO-RAG was built by leveraging a combination of cutting-edge technologies, including Large Language Models (LLMs) like GPT-4, Retrieval-Augmented Generation (RAG), and Gemini AI. We started by using Gemini AI to extract nutritional information from images of tables containing food items.
-- This data was then embedded and stored in a vector database using RAG, allowing for efficient retrieval of relevant information. The backend, developed in Python using Flask, processes user queries by searching the database for the requested food item. If found, the information is passed to GPT-4o mini, which generates a clear and concise response. If not found, GPT-4o mini directly generates the response.
-- For personalized diet plans, the system considers user inputs such as health conditions, region, and food accessibility, using RAG and LLMs to create tailored recommendations, ensuring that the advice is both relevant and actionable.
+- To create NutrinO-RAG the following technologies and knowledge areas were used: Large Language Models (LLMs) such as GPT-4, Retrieval-Augmented Generation (RAG), and Gemini AI. we first employed Gemini AI in a scenario where the AI is designed to read from tables containing images of foods in order to extract nutrition values. 
+- The following data was interpreted and placed in a vector database through use of RAG thereby enabling easy chequer point information acquisition. The backend, created in Python employing Flask, on the user’s request searches the database for the requested food. When it is found, this information is relayed to GPT-4o mini whereby it develops a simple answer in relation to the question that was posed. Should the response not be found, the program has GPT-4o mini create the response on its own. 
+- Regarding the determination of specific diet requirements, the system considers the user defined inputs including health conditions, geographical location and availability of food in the location, The system utilizes RAG and LLMs to generate the recommended diet and only gives the advices that can be implemented by the users.
   
 ## How to Set Up?
-
-
-## Model Architecture 🕝 ⚡
 
 
 ## Possiblesd Upgrades

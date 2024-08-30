@@ -38,7 +38,7 @@ The chatbot's capabilities include providing nutritional values for various food
  - **Docker** 
 
 ## How We Built It 🛠️👷‍♂️
-- To create NutrinO-RAG the following technologies and knowledge areas were used: Large Language Models (LLMs) such as GPT-4, Retrieval-Augmented Generation (RAG), and Gemini AI. we first employed Gemini AI in a scenario where the AI is designed to read from tables containing images of foods in order to extract nutrition values. 
+- To create NutrinO-RAG the following technologies and knowledge areas were used: Large Language Models (LLMs) such as GPT-4o mini, Retrieval-Augmented Generation (RAG), and Gemini AI. we first employed Gemini AI in a scenario where the AI is designed to read from tables containing images of foods in order to extract nutrition values. 
 - The following data was interpreted and placed in a vector database through use of RAG thereby enabling easy chequer point information acquisition. The backend, created in Python employing Flask, on the user’s request searches the database for the requested food. When it is found, this information is relayed to GPT-4o mini whereby it develops a simple answer in relation to the question that was posed. Should the response not be found, the program has GPT-4o mini create the response on its own. 
 - Regarding the determination of specific diet requirements, the system considers the user defined inputs including health conditions, geographical location and availability of food in the location, The system utilizes RAG and LLMs to generate the recommended diet and only gives the advices that can be implemented by the users.
   

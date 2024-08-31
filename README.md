@@ -3,9 +3,14 @@
 
 ## 🚀 Demo
 
+## screenshots
+
+![Screenshot (7)](https://github.com/user-attachments/assets/55d3e3ec-c1d0-47d6-9236-9e7831ce2f15)
 
 
+![Screenshot (8)](https://github.com/user-attachments/assets/19f8693c-128c-482e-bcae-0b25d8e59e3e)
 
+![Screenshot (9)](https://github.com/user-attachments/assets/5a06940c-d367-4fae-95bf-c53672ed2657)
 
 
 ## Overview
